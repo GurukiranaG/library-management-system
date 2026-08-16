@@ -2,6 +2,7 @@ package com.library.library_management_system.service;
 import com.library.library_management_system.entity.Book;
 import com.library.library_management_system.repository.BookRepository;
 import org.springframework.stereotype.Service;
+import com.library.library_management_system.exception.BookNotFoundException;
 import java.util.List;
 @Service
 public class BookService {
@@ -16,7 +17,8 @@ public class BookService {
         return bookRepository.save(book);
     }
     public Book getBookById(Long id) {
-        return bookRepository.findById(id).orElse(null);
+        return bookRepository.findById(id).orElseThrow(() ->
+                new BookNotFoundException("Book not found with id: " + id));
     }
     public Book updateBook(Long id, Book updatedBook) {
 
