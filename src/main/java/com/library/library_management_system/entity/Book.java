@@ -4,6 +4,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.validation.constraints.NotBlank;
 
 @Entity
 public class Book {
@@ -11,15 +12,14 @@ public class Book {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    @NotBlank(message = "Title must not be blank")
     private String title;
-
+    @NotBlank (message = "Author must not be blank")
     private String author;
-
+    @NotBlank(message = "isbin must not be blank")
     private String isbn;
-
+    @NotBlank(message = "category must not be blank")
     private String category;
-
     private boolean available;
     public Book(){
 
