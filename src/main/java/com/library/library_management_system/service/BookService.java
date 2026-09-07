@@ -23,17 +23,24 @@ public class BookService {
     public Book updateBook(Long id, Book updatedBook) {
 
         Book existingBook = bookRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Book not found"));
+                .orElseThrow(() ->
+                        new BookNotFoundException(
+                                "Book not found with id: " + id));
 
         existingBook.setTitle(updatedBook.getTitle());
         existingBook.setAuthor(updatedBook.getAuthor());
         existingBook.setIsbn(updatedBook.getIsbn());
         existingBook.setCategory(updatedBook.getCategory());
-        existingBook.setAvailable(updatedBook.isAvailable());
 
         return bookRepository.save(existingBook);
     }
     public void deleteBook(Long id) {
-        bookRepository.deleteById(id);
+
+        Book book = bookRepository.findById(id)
+                .orElseThrow(() ->
+                        new BookNotFoundException(
+                                "Book not found with id: " + id));
+
+        bookRepository.delete(book);
     }
 }
