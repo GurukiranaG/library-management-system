@@ -1,5 +1,6 @@
 package com.library.library_management_system.service;
 import com.library.library_management_system.entity.Book;
+import com.library.library_management_system.exception.DuplicateIsbnException;
 import com.library.library_management_system.repository.BookRepository;
 import org.springframework.stereotype.Service;
 import com.library.library_management_system.exception.BookNotFoundException;
@@ -8,12 +9,21 @@ import java.util.List;
 public class BookService {
     private final BookRepository bookRepository;
     public BookService(BookRepository bookRepository) {
+
         this.bookRepository = bookRepository;
     }
     public List<Book> getAllBooks() {
+
         return bookRepository.findAll();
     }
     public Book addBook(Book book) {
+        if (bookRepository.existsByIsbn(book.getIsbn())) {
+            throw new DuplicateIsbnException(
+                    "Book with ISBN " + book.getIsbn() + " already exists"
+            );
+        }
+
+        book.setAvailable(true);
         return bookRepository.save(book);
     }
     public Book getBookById(Long id) {

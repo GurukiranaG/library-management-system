@@ -10,28 +10,58 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
     @ExceptionHandler(BookNotFoundException.class)
-    public ResponseEntity<String> handleBookNotFound(
+    public ResponseEntity<ApiError> handleBookNotFound(
             BookNotFoundException ex) {
+
+        ApiError error = new ApiError(
+                HttpStatus.NOT_FOUND.value(),
+                HttpStatus.NOT_FOUND.getReasonPhrase(),
+                ex.getMessage()
+        );
 
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
-                .body(ex.getMessage());
+                .body(error);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String, String>> handleValidationException(
+    public ResponseEntity<ApiError> handleValidationException(
             MethodArgumentNotValidException ex) {
 
-        Map<String, String> errors = new HashMap<>();
+        Map<String, String> fieldErrors = new HashMap<>();
 
         ex.getBindingResult()
                 .getFieldErrors()
                 .forEach(error ->
-                        errors.put(error.getField(), error.getDefaultMessage())
-                );
+                        fieldErrors.put(
+                                error.getField(),
+                                error.getDefaultMessage()
+                        ));
+
+        ApiError error = new ApiError(
+                HttpStatus.BAD_REQUEST.value(),
+                HttpStatus.BAD_REQUEST.getReasonPhrase(),
+                "Validation failed"
+        );
+
+        error.setFieldErrors(fieldErrors);
 
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                .body(errors);
+                .body(error);
+    }
+    @ExceptionHandler(DuplicateIsbnException.class)
+    public ResponseEntity<ApiError> handleDuplicateIsbn(
+            DuplicateIsbnException ex) {
+
+        ApiError error = new ApiError(
+                HttpStatus.CONFLICT.value(),
+                HttpStatus.CONFLICT.getReasonPhrase(),
+                ex.getMessage()
+        );
+
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(error);
     }
 }
