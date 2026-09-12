@@ -52,6 +52,7 @@ public class BorrowRecord {
         return status;
     }
 
+
     public void setIssueDate(LocalDate issueDate) {
         this.issueDate = issueDate;
     }
