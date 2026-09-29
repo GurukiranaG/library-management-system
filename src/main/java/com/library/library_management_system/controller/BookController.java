@@ -2,14 +2,8 @@ package com.library.library_management_system.controller;
 import com.library.library_management_system.entity.Book;
 import com.library.library_management_system.service.BookService;
 import jakarta.validation.Valid;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.data.domain.Page;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import  com.library.library_management_system.dto.BookRequestDTO;
@@ -37,6 +31,38 @@ public class BookController {
         List<BookResponseDTO> response = books.stream()
                 .map(bookMapper::toResponseDTO)
                 .toList();
+
+        return ResponseEntity.ok(response);
+    }
+    @GetMapping("/search")
+    public ResponseEntity<List<BookResponseDTO>> searchBooks(@RequestParam String keyword,@RequestParam int size,@RequestParam int page){
+        List<Book> books=bookService.searchBooks(keyword,size,page);
+        List<BookResponseDTO> response = books.stream().map(bookMapper::toResponseDTO).toList();
+        return ResponseEntity.ok(response);
+    }
+    @GetMapping("filter")
+    public ResponseEntity<List<BookResponseDTO>> filterBooks(@RequestParam boolean available){
+        List<Book>books=bookService.searchBooksByAvailability(available);
+        List<BookResponseDTO> response = books.stream().map(bookMapper::toResponseDTO).toList();
+        return ResponseEntity.ok(response);
+    }
+    @GetMapping("/page")
+    public ResponseEntity<Page<BookResponseDTO>> getBooksByPage(
+            @RequestParam int page,
+            @RequestParam int size,
+            @RequestParam String sortBy,
+            @RequestParam String direction) {
+
+        Page<Book> books =
+                bookService.getBooksWithPagination(
+                        page,
+                        size,
+                        sortBy,
+                        direction
+                );
+
+        Page<BookResponseDTO> response =
+                books.map(bookMapper::toResponseDTO);
 
         return ResponseEntity.ok(response);
     }
@@ -91,4 +117,5 @@ public class BookController {
 
         return ResponseEntity.noContent().build();
     }
+
 }
