@@ -54,12 +54,12 @@ public class AuthController {
     // 2. Login and generate JWT token
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest request) {
-        // Authenticate credentials using Spring Security's AuthenticationManager
+        System.out.println(">>> HIT LOGIN ENDPOINT WITH USER: " + (request != null ? request.getUsername() : "null"));
+
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
         );
 
-        // If authentication succeeds, load user details and generate JWT token
         final UserDetails userDetails = userDetailsService.loadUserByUsername(request.getUsername());
         final String jwt = jwtService.generateToken(userDetails);
 
